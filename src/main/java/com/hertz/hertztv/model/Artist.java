@@ -1,9 +1,12 @@
 package com.hertz.hertztv.model;
 
+import org.springframework.lang.Nullable;
+
 import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "artists")
 public class Artist {
 
     @Id
@@ -15,13 +18,23 @@ public class Artist {
     private String nickname;
     private String email;
     private String phoneNumber;
+    private String picturePath;
 
-    public Artist(String firstName, String lastName, String nickname, String email, String phoneNumber) {
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinTable(name = "artist_event",
+            joinColumns = @JoinColumn(name = "artist_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id"))
+    @Nullable
+    private Set<Event> events = new LinkedHashSet<>();
+
+    public Artist(String firstName, String lastName, String nickname, String email, String phoneNumber, String picturePath, @Nullable Set<Event> events) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickname = nickname;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.picturePath = picturePath;
+        this.events = events;
     }
 
     public Artist() {
@@ -73,5 +86,21 @@ public class Artist {
 
     public void setPhoneNumber(String phone) {
         this.phoneNumber = phone;
+    }
+
+    public Set<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Set<Event> events) {
+        this.events = events;
+    }
+
+    public String getPicturePath() {
+        return picturePath;
+    }
+
+    public void setPicturePath(String picturePath) {
+        this.picturePath = picturePath;
     }
 }
